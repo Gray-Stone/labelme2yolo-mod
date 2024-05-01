@@ -1,4 +1,9 @@
-# Labelme2YOLO
+# Labelme2YOLO-modified
+
+**This is a fork of LabelMe2YOLO**
+
+The main change is added the ability to specify class ID for label name.
+
 
 [![PyPI - Version](https://img.shields.io/pypi/v/labelme2yolo.svg)](https://pypi.org/project/labelme2yolo)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/labelme2yolo?style=flat)
@@ -32,6 +37,8 @@ pip install labelme2yolo
 **--output\_format (Optional)** The output format of label.
 
 **--label\_list (Optional)** The pre-assigned category labels.
+
+**--label_pair_list (Optional)** List of class id and label pairs. example: `--label_pair_list 1:cat 20:dog`. When using this argument, all other labels in the input json will be ignored. The `--label_list` argument is also ignored.
 
 ## How to Use
 
