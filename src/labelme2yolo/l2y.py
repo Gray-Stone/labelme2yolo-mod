@@ -152,13 +152,23 @@ def save_yolo_image(json_data, json_dir, image_dir, target_dir, target_name):
 class Labelme2YOLO:
     """Labelme to YOLO format converter"""
 
-    def __init__(self, json_dir, output_format, label_list):
+    def __init__(self, json_dir, output_format, label_list , label_pair_list):
         self._json_dir = os.path.expanduser(json_dir)
         self._output_format = output_format
         self._label_list = []
         self._label_id_map = {}
         self._label_dir_path = ""
         self._image_dir_path = ""
+        self._auto_add_label = True
+
+
+        if label_pair_list:
+            for label_id , name in label_pair_list:
+                self._label_list.append(name)
+                self._label_id_map[name] = label_id
+            # We don't look at other form of labels
+            self._auto_add_label = False
+            return 
 
         if label_list:
             self._label_list = label_list
@@ -318,6 +328,8 @@ class Labelme2YOLO:
         if shape["label"]:
             label = shape["label"]
             if label not in self._label_list:
+                if not self._auto_add_label:
+                    return None 
                 self._update_id_map(label)
             label_id = self._label_id_map[shape["label"]]
 
@@ -340,6 +352,8 @@ class Labelme2YOLO:
         if shape["label"]:
             label = shape["label"]
             if label not in self._label_list:
+                if not self._auto_add_label:
+                    return None
                 self._update_id_map(label)
             label_id = self._label_id_map[shape["label"]]
 
@@ -356,21 +370,18 @@ class Labelme2YOLO:
             test_dir = os.path.join(self._image_dir_path, "test/")
 
             names_str = ""
-            for label, _ in self._label_id_map.items():
-                names_str += f'"{label}", '
-            names_str = names_str.rstrip(", ")
+            for label, label_id in self._label_id_map.items():
+                names_str += f'  {label_id}: "{label}"'
 
             if os.path.exists(test_dir):
                 content = (
                     f"train: {train_dir}\nval: {val_dir}\ntest: {test_dir}\n"
-                    f"nc: {len(self._label_id_map)}\n"
-                    f"names: [{names_str}]"
+                    f"names:\n{names_str}"
                 )
             else:
                 content = (
                     f"train: {train_dir}\nval: {val_dir}\n"
-                    f"nc: {len(self._label_id_map)}\n"
-                    f"names: [{names_str}]"
+                    f"names:\n{names_str}"
                 )
 
             yaml_file.write(content)

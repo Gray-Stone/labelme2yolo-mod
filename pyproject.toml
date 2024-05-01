@@ -39,7 +39,7 @@ Source = "https://github.com/greatv/labelme2yolo"
 path = "src/labelme2yolo/__about__.py"
 
 [project.scripts]
-labelme2yolo = "labelme2yolo.cli:run"
+labelme2yolo-mod = "labelme2yolo.cli:run"
 
 [tool.hatch.build.targets.sdist]
 [tool.hatch.build.targets.wheel]

@@ -8,6 +8,12 @@ import argparse
 from labelme2yolo.__about__ import __version__
 from labelme2yolo.l2y import Labelme2YOLO
 
+def ColonTuple(arg)-> tuple[str,str]:
+    # https://stackoverflow.com/questions/33499173/how-to-create-argument-of-type-list-of-pairs-with-argparse
+    splits = arg.split(':')
+    if len(splits) !=2:
+        raise argparse.ArgumentTypeError("Value is not pair seperated with :")
+    return (splits[0] , splits[1])
 
 def run():
     """
@@ -56,6 +62,13 @@ def run():
         help="The ordered label list, for example --label_list cat dog",
         required=False,
     )
+    parser.add_argument(
+        "--label_pair_list",
+        type=ColonTuple,
+        nargs='+',
+        default=None,
+        help="List of label name id pair, for example --label_pair_list 20:my_class",
+        required=False)
 
     args = parser.parse_args()
 
@@ -63,7 +76,7 @@ def run():
         parser.print_help()
         return 0
 
-    convertor = Labelme2YOLO(args.json_dir, args.output_format, args.label_list)
+    convertor = Labelme2YOLO(args.json_dir, args.output_format, args.label_list , args.label_pair_list)
 
     if args.json_name is None:
         convertor.convert(val_size=args.val_size, test_size=args.test_size)
